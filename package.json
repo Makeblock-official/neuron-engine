@@ -1,0 +1,35 @@
+{
+  "name": "neurons-engine",
+  "version": "0.0.1",
+  "repository": {},
+  "dependencies": {
+    "bluebird": "^3.3.3",
+    "moment": "^2.13.0",
+    "serialport": "^2.0.6",
+    "underscore": "^1.8.3",
+    "log4js": "^0.6.37",
+    "ws": "^0.8.1",
+    "mqtt": "^1.10.0",
+    "when": "^3.7.7",
+    "async": "^1.5.2"
+  },
+  "devDependencies": {
+    "blessed": "^0.1.81",
+    "browserify": "^13.0.0",
+    "chai": "^3.5.0",
+    "gulp": "^3.9.1",
+    "gulp-istanbul": "^1.1.1",
+    "gulp-jshint": "^2.0.0",
+    "gulp-mocha": "^2.2.0",
+    "gulp-uglify": "^3.0.0",
+    "istanbul": "^0.4.5",
+    "jshint": "^2.9.1",
+    "log": "^1.4.0",
+    "sinon": "^1.17.6",
+    "sinon-chai": "^2.8.0",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/gulp test"
+  }
+}

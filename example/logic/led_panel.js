@@ -76,7 +76,7 @@ var EXAMPLE_IMAGES = [
   ]
 ];
 
- var engine = require('../../lib/engine/logic').create({"driver": "websocket", "serverIP": "192.168.100.1","loglevel": "WARN"});
+ var engine = require('../../lib/engine/logic').create({"driver": "serial","loglevel": "WARN"});
 
  engine.on("blockStatusChanges", blockStatusChanges);
 

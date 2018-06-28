@@ -3,13 +3,13 @@ var currentColor = 1;
 
 var LETTERS = {
   A: [
-    0, 0, 2, 2, 0, 0, 0, 0,
-    0, 2, 2, 2, 2, 0, 0, 0,
-    2, 2, 0, 0, 2, 2, 0, 0,
-    2, 2, 0, 0, 2, 2, 0, 0,
-    2, 2, 2, 2, 2, 2, 0, 0,
-    2, 2, 0, 0, 2, 2, 0, 0,
-    2, 2, 0, 0, 2, 2, 0, 0,
+    0, 0, 0, 2, 2, 0, 0, 0, 
+    0, 0, 2, 2, 2, 2, 0, 0, 
+    0, 2, 2, 0, 0, 2, 2, 0, 
+    0, 2, 2, 0, 0, 2, 2, 0, 
+    0, 2, 2, 2, 2, 2, 2, 0, 
+    0, 2, 2, 0, 0, 2, 2, 0, 
+    0, 2, 2, 0, 0, 2, 2, 0, 
     0, 0, 0, 0, 0, 0, 0, 0
   ],
   D: [
@@ -33,13 +33,13 @@ var LETTERS = {
       0, 0, 0, 0, 0, 0, 0, 0
     ],
   I: [
-      0, 2, 2, 2, 2, 0, 0, 0,
-      0, 0, 2, 2, 0, 0, 0, 0,
-      0, 0, 2, 2, 0, 0, 0, 0,
-      0, 0, 2, 2, 0, 0, 0, 0,
-      0, 0, 2, 2, 0, 0, 0, 0,
-      0, 0, 2, 2, 0, 0, 0, 0,
-      0, 2, 2, 2, 2, 0, 0, 0,
+      0, 0, 2, 2, 2, 2, 0, 0, 
+      0, 0, 0, 2, 2, 0, 0, 0, 
+      0, 0, 0, 2, 2, 0, 0, 0, 
+      0, 0, 0, 2, 2, 0, 0, 0, 
+      0, 0, 0, 2, 2, 0, 0, 0, 
+      0, 0, 0, 2, 2, 0, 0, 0, 
+      0, 0, 2, 2, 2, 2, 0, 0, 
       0, 0, 0, 0, 0, 0, 0, 0
     ],
   K: [
@@ -73,13 +73,13 @@ var LETTERS = {
       0, 0, 0, 0, 0, 0, 0, 0
     ],
   S: [
-      0, 2, 2, 2, 2, 0, 0, 0,
-      2, 2, 0, 0, 2, 2, 0, 0,
-      2, 2, 2, 0, 0, 0, 0, 0,
-      0, 2, 2, 2, 0, 0, 0, 0,
-      0, 0, 0, 2, 2, 2, 0, 0,
-      2, 2, 0, 0, 2, 2, 0, 0,
-      0, 2, 2, 2, 2, 0, 0, 0,
+      0, 0, 2, 2, 2, 2, 0, 0, 
+      0, 2, 2, 0, 0, 2, 2, 0, 
+      0, 2, 2, 2, 0, 0, 0, 0, 
+      0, 0, 2, 2, 2, 0, 0, 0, 
+      0, 0, 0, 0, 2, 2, 2, 0, 
+      0, 2, 2, 0, 0, 2, 2, 0, 
+      0, 0, 2, 2, 2, 2, 0, 0, 
       0, 0, 0, 0, 0, 0, 0, 0
     ],
   T: [
@@ -125,15 +125,15 @@ var LETTERS = {
 }
 
 var tempImage = [];
+var ledPanelCount = 0;
 var wordCount = 0;
 var first = true;
 var count = 1;
 var count2 = 0;
-var ledPanelCount = 1;
 
- var engine = require('../../lib/engine/logic').create(
-      {"driver": "serial", "loglevel": "FATAL"}
-    );
+var engine = require('../../lib/engine/logic').create(
+    {"driver": "serial", "loglevel": "FATAL"}
+  );
 
 /* Events */
  engine.on("driverConnectResult", driverConnectResult);
@@ -146,21 +146,31 @@ function driverConnectResult(type, idx, value){
 }
 
 function blockListChanges(list){
-  if ('LEDPANEL' in list){
-    console.log("Found button and Led panel.");
-    clearPanel();
-    drawUpdate(1600); 
-    console.log("Starting to display text.");
+  oldLedCount = ledPanelCount;
+  if ('LEDPANEL' in list && 'BUTTON' in list){
+    if(first){
+      console.log("Found button and LED panel.");
+      clearPanel();
+      drawUpdate(1600); 
+      console.log("Starting to display text.");
+      first = false;
+    }
+
+     // Count nr of LED panel
+    ledPanelCount = list["LEDPANEL"].length;
+    console.log("Found "+ledPanelCount+" LED panel");
+  }else{
+    ledPanelCount = 0;
   }
 }
 
 function blockStatusChanges(type, idx, value){
-  //console.log('blockStatusChanges: ' + type + ' ' + idx + ' ' + JSON.stringify(value));
+  console.log('blockStatusChanges: ' + type + ' ' + idx + ' ' + JSON.stringify(value));
   if(type== "BUTTON" && idx==1){
     if(value.press == 1){
       console.log("Button pressed, changing color on text");
       currentColor++;
-      if(currentColor >= 10) currentColor = 1;
+      if(currentColor >= 12) currentColor = 1;
     }
   }
 }
@@ -168,16 +178,23 @@ function blockStatusChanges(type, idx, value){
 
 /* Helper functions */ 
 function drawUpdate(ms){
+  
   var letter = wordToWrite[wordCount];
-
-  uplodeAndShow(LETTERS[letter], 2, currentColor);
+  for (var index = 0; index < ledPanelCount; index++) {
+    if(wordCount >= index && (wordCount-index) <= (wordToWrite.length-1)){
+      letter = wordToWrite[wordCount-index];
+      uplodeAndShow(ledPanelCount-index, LETTERS[letter], 2, currentColor);
+    }else{
+      uplodeAndShow(ledPanelCount-index, emptyImage(), 2, currentColor);
+    }
+  }
   wordCount++;
-  if(wordCount >= wordToWrite.length) wordCount = 0;
-
+  if(wordCount >= (wordToWrite.length + ledPanelCount)) wordCount = 0;
+  
   setTimeout(drawUpdate, ms, ms);
 }
 
-function uplodeAndShow(image, mode, color){
+function uplodeAndShow(id, image, mode, color){
   var out = [];
   var number;
   
@@ -197,12 +214,14 @@ function uplodeAndShow(image, mode, color){
       }
       
   }
-  engine.sendBlockCommand('LEDPANEL','DISPLAY_IMAGE',out,1);        
+  engine.sendBlockCommand('LEDPANEL','DISPLAY_IMAGE',out,id);        
 }
 
 function clearPanel(){
-  for (var index = 0; index < 64; index++) {
-    engine.sendBlockCommand('LEDPANEL','DISPLAY_SINGLE_LED',[index, 0, 0, 0],1);
+  for (var id = 0; id < ledPanelCount; id++) {
+    for (var index = 0; index < 64; index++) {
+      engine.sendBlockCommand('LEDPANEL','DISPLAY_SINGLE_LED',[index, 0, 0, 0],id+1);
+    }
   }
 }
 

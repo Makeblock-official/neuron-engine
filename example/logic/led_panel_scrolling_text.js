@@ -131,8 +131,14 @@ var first = true;
 var count = 1;
 var count2 = 0;
 
+/* Serial connected to Bluetooth block or Power block
 var engine = require('../../lib/engine/logic').create(
     {"driver": "serial", "loglevel": "FATAL"}
+  );
+
+/* Wifi connection */
+var engine = require('../../lib/engine/logic').create(
+    {"driver": "websocket", "serverIP": "192.168.100.1","loglevel": "WARN"}
   );
 
 /* Events */
@@ -146,6 +152,7 @@ function driverConnectResult(type, idx, value){
 }
 
 function blockListChanges(list){
+  console.log(JSON.stringify(list));
   oldLedCount = ledPanelCount;
   if ('LEDPANEL' in list && 'BUTTON' in list){
     if(first){

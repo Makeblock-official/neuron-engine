@@ -230,3 +230,10 @@ gulp browserify
 ```bash
 gulp compress
 ```
+### USB Camera block
+
+Access by Wifi Block
+
+Snapshot: http://192.168.100.1:8329/snap?filename=test.jpg
+
+Note: Can also be used directly connected to PC and it will be detected as a USB 2.0 device.
